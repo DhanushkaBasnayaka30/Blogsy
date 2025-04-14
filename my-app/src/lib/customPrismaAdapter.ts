@@ -12,7 +12,7 @@ export function CustomPrismaAdapter(prisma): Adapter {
       const user = await prisma.user.create({
         data: {
           ...data,
-          role: "user",  // add your custom default role here
+          role: "user",  
         },
       });
       return user;

@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { Toggle } from "../ui/toggle";
 import { Editor } from "@tiptap/react";
+import React from "react";
 
 export default function MenuBar({ editor }: { editor: Editor | null }) {
   if (!editor) return null;
@@ -88,7 +89,7 @@ export default function MenuBar({ editor }: { editor: Editor | null }) {
       onClick: () => document.getElementById("image-upload-input")?.click(),
       pressed: false,
     },
-    // image controls — only show when image selected
+    // Image controls — only show when image is selected
     {
       icon: <X className="size-4" />,
       onClick: () => editor.chain().focus().deleteSelection().run(),
@@ -119,9 +120,18 @@ export default function MenuBar({ editor }: { editor: Editor | null }) {
   ];
 
   return (
-    <div className="border rounded-md p-1 mb-1 bg-slate-50 space-x-2 z-50">
+    <div className="border rounded-md p-1 mb-1 bg-slate-50 flex flex-wrap gap-1 z-50">
       {Options.filter(opt => opt.show === undefined || opt.show).map((option, index) => (
-        <Toggle key={index} pressed={option.pressed} onPressedChange={option.onClick}>
+        <Toggle
+          key={index}
+          pressed={option.pressed}
+          onPressedChange={option.onClick}
+          className={`p-2 rounded-md transition-colors duration-200 ${
+            option.pressed
+              ? "bg-blue-500 text-white scale-105"
+              : "text-gray-900   hover:bg-gray-400"
+          }`}
+        >
           {option.icon}
         </Toggle>
       ))}

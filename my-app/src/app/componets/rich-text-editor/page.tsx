@@ -29,12 +29,12 @@ export default function RichTextEditor({
     content,
     editorProps: {
       attributes: {
-        class: "min-h-[156px] border rounded-md bg-slate-50 py-2 px-3",
+        class: "min-h-[350px] border border-gray-500  text-xl outline-none rounded-md bg-slate-50 py-2 px-3",
       },
     },
     onUpdate: ({ editor }) => onChange(editor.getHTML()),
   });
-// console.log(content);
+console.log(content);
   return (
     <div>
       <MenuBar editor={editor} />

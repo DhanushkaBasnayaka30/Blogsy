@@ -1,5 +1,7 @@
 'use client'
 
+
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 interface Blog {
@@ -26,6 +28,7 @@ const BlogList: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState<number>(1);
   const [totalBlogs, setTotalBlogs] = useState<number>(0);
+	const router = useRouter()
 console.log(blogs);
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -47,7 +50,7 @@ console.log(blogs);
     fetchBlogs();
   }, [page]);
 
-  const totalPages = Math.ceil(totalBlogs / 5); // 5 posts per page
+  const totalPages = Math.ceil(totalBlogs / 5); 
 
   if (loading) {
     return <div>Loading...</div>;
@@ -63,13 +66,13 @@ console.log(blogs);
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
         {blogs.map((blog) => (
-          <div key={blog.id} className="bg-white shadow-lg rounded-lg overflow-hidden">
+          <div key={blog.id} className="bg-white shadow-lg rounded-lg overflow-hidden cursor-pointer hover:scale-105 duration-700 shadow-2xl shadow-gray-400" onClick={() => router.push(`/blogs/${blog.slug}`)} >
             <div className="relative">
               <div
                 className="w-full h-56 bg-cover bg-center"
                 style={{ backgroundImage: `url(${blog.content.match(/src="([^"]+)"/)?.[1] || ""})` }}
               />
-							<p dangerouslySetInnerHTML={{ __html: blog.content }} />
+							{/* <p dangerouslySetInnerHTML={{ __html: blog.content }} /> */}
 
             </div>
             <div className="p-4">

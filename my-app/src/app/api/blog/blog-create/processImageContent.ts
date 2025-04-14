@@ -1,35 +1,39 @@
 import { load } from "cheerio";
 import cloudinary from "../../../../lib/cloudinary";
 
-export async function processImagesInContent(content: string) {
-	const $ = load(content);
+// Utility to create a slug-safe image name
+function generateImageName(base: string, index: number) {
+  return `${base
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, "") // remove non-word characters
+    .replace(/\s+/g, "-")}-${Date.now()}-${index}`;
+}
 
-	const imagePromises = $("img")
-		.map(async (i, img) => {
-			const src = $(img).attr("src");
+export async function processImagesInContent(content: string, blogTitle: string) {
+  const $ = load(content);
 
-			// If it's a base64 image
-			if (src && src.startsWith("data:image")) {
-				const uploadResponse = await cloudinary.uploader.upload(src, {
-					folder: "blog_images",
-					public_id: `blog-${Date.now()}-${i}`,
-					resource_type: "image",
-				});
+  const imagePromises = $("img")
+    .map(async (i, img) => {
+      const src = $(img).attr("src");
 
-				// Replace base64 src with Cloudinary URL
-				$(img).attr("src", uploadResponse.secure_url);
+      if (src && src.startsWith("data:image")) {
+        const imageName = generateImageName(blogTitle, i);
 
-				// ✅ Console log when upload is successful
-				console.log(
-					`✅ Image ${i + 1} uploaded successfully: ${
-						uploadResponse.secure_url
-					}`
-				);
-			}
-		})
-		.get(); // Converts cheerio collection into a usable array of promises
+        const uploadResponse = await cloudinary.uploader.upload(src, {
+          folder: "blog_images",
+          public_id: imageName,
+          resource_type: "image",
+        });
 
-	await Promise.all(imagePromises);
+        $(img).attr("src", uploadResponse.secure_url);
 
-	return $.html(); // Return the updated HTML string
+        console.log(`✅ Image ${i + 1} uploaded successfully: ${uploadResponse.secure_url}`);
+      }
+    })
+    .get();
+
+  await Promise.all(imagePromises);
+
+  return $.html();
 }
