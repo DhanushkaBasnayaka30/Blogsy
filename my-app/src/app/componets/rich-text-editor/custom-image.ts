@@ -1,20 +1,34 @@
-import { Image } from "@tiptap/extension-image";
+import { Node, mergeAttributes } from "@tiptap/core";
 
-const CustomImage = Image.extend({
+// Custom Image extension
+export const CustomImage = Node.create({
+  name: "customImage",
+  group: "block",
+  inline: false,
+  selectable: true,
+  draggable: true,
   addAttributes() {
     return {
-      ...this.parent?.(),
-      class: {
-        default: "mx-auto",
-        parseHTML: (element) => element.getAttribute("class"),
-        renderHTML: (attributes) => {
-          return {
-            class: attributes.class,
-          };
+      src: { default: null },
+      class: { default: "mx-auto" },
+    };
+  },
+  parseHTML() {
+    return [{ tag: "img" }];
+  },
+  renderHTML({ HTMLAttributes }) {
+    return ["img", mergeAttributes(HTMLAttributes)];
+  },
+  addCommands() {
+    return {
+      setCustomImage:
+        (options) =>
+        ({ commands }) => {
+          return commands.insertContent({
+            type: this.name,
+            attrs: options,
+          });
         },
-      },
     };
   },
 });
-
-export default CustomImage;

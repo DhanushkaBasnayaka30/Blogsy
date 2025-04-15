@@ -61,7 +61,7 @@ model Blog {
   id        String   @id @default(cuid())
   slug      String   @unique // for SEO-friendly URLs
   title     String
-  content   String   // store rich text content as string (TipTap serializes to JSON/string)
+  content   String   @db.LongText// store rich text content as string (TipTap serializes to JSON/string)
   image     String?  // image URL from Cloudinary/UploadThing
   tags      Json
   category  String

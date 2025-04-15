@@ -13,7 +13,7 @@ const SigninButton = () => {
     );
   }
   return (
-    <button onClick={() => signIn()} className="text-green-600  cursor-pointer font-semibold">
+    <button onClick={() => signIn()} className="text-black text-xl  hover:scale-105 duration-700  cursor-pointer font-semibold">
       Sign In
     </button>
   );

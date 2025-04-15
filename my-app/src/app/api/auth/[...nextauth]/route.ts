@@ -4,6 +4,7 @@ import { AuthOptions } from "next-auth";
 import NextAuth from "next-auth/next";
 import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
+
 export const authOptions: AuthOptions = {
   session: {
     strategy: "jwt",
@@ -19,7 +20,7 @@ export const authOptions: AuthOptions = {
           name: `${profile.given_name} ${profile.family_name}`,
           email: profile.email,
           image: profile.picture,
-          role: profile.role ? profile.role : "user",
+          // no role here
         };
       },
     }),
@@ -32,7 +33,7 @@ export const authOptions: AuthOptions = {
           name: profile.name,
           email: profile.email,
           image: profile.avatar_url,
-          role: "user", // You can modify this if you have role management logic
+          // no role here
         };
       },
     }),
@@ -40,10 +41,14 @@ export const authOptions: AuthOptions = {
 
   callbacks: {
     async jwt({ token, user }) {
-      return { ...token, ...user };
+      // When user signs in for the first time (only then 'user' is available)
+      if (user) {
+        token.id = user.id;
+        token.role = user.role;  // get role from database
+      }
+      return token;
     },
     async session({ session, token }) {
-      
       if (session.user) {
         session.user.id = token.id;
         session.user.role = token.role;

@@ -1,11 +1,13 @@
-'use client'
-
+"use client";
 
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import { GrLike } from "react-icons/gr";
+import { useSession } from "next-auth/react";
 
 interface Blog {
   id: string;
+  slug: string;
   title: string;
   content: string;
   tags: string[];
@@ -26,20 +28,19 @@ const BlogList: React.FC = () => {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [page, setPage] = useState<number>(1);
-  const [totalBlogs, setTotalBlogs] = useState<number>(0);
-	const router = useRouter()
-console.log(blogs);
+ 
+  const router = useRouter();
+  const { data: session } = useSession();
+
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
-        const response = await fetch(`/api/blog/get-blogs?page=${page}`);
-        if (!response.ok) {
-          throw new Error("Failed to fetch blogs");
-        }
+        const response = await fetch(`/api/blog/get-blogs`);
+        if (!response.ok) throw new Error("Failed to fetch blogs");
+
         const data: PaginatedBlogs = await response.json();
         setBlogs(data.blogs);
-        setTotalBlogs(data.totalBlogs);
+       
       } catch (err) {
         setError("Failed to fetch blogs");
       } finally {
@@ -48,63 +49,52 @@ console.log(blogs);
     };
 
     fetchBlogs();
-  }, [page]);
+  }, []);
 
-  const totalPages = Math.ceil(totalBlogs / 5); 
+  
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
+  if (loading) return <div className="text-center mt-20">Loading blogs...</div>;
+  if (error) return <div className="text-center mt-20 text-red-600">{error}</div>;
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold text-center text-gray-800 mb-8">Blog List</h1>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-        {blogs.map((blog) => (
-          <div key={blog.id} className="bg-white shadow-lg rounded-lg overflow-hidden cursor-pointer hover:scale-105 duration-700 shadow-2xl shadow-gray-400" onClick={() => router.push(`/blogs/${blog.slug}`)} >
-            <div className="relative">
+    <main className="min-h-screen bg-gray-50  w-full lg:w-[80%] mt-20   mx-auto">
+      {/* Navbar */}
+          {/* Blog List */}
+      <div className=" w-full py-10 px-4">
+      
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-2">
+          {blogs.map((blog) => (
+            <div
+              key={blog.id}
+              className="border border-gray-300 bg-white rounded-lg overflow-hidden shadow hover:scale-105 transition duration-300 cursor-pointer"
+              onClick={() => router.push(`/blogs/${blog.slug}`)}
+            >
               <div
-                className="w-full h-56 bg-cover bg-center"
-                style={{ backgroundImage: `url(${blog.content.match(/src="([^"]+)"/)?.[1] || ""})` }}
+                className="w-full h-80 bg-cover bg-center"
+                style={{
+                  backgroundImage: `url(${blog.content.match(/src="([^"]+)"/)?.[1] || "https://via.placeholder.com/600x400"})`,
+                }}
               />
-							{/* <p dangerouslySetInnerHTML={{ __html: blog.content }} /> */}
+              <div className="p-4">
+                <h3 className="text-2xl font-semibold mb-2 text-gray-900">{blog.title}</h3>
+                <p className="text-sm text-gray-600 mb-2">Category: {blog.category}</p>
+                <p className="text-xs text-gray-500">Posted on {new Date(blog.createdAt).toLocaleDateString()}</p>
 
+                {session && (
+                  <div className="flex items-center justify-between mt-4 text-sm">
+                    <div className="flex items-center gap-1">
+                      <GrLike color="#2563eb" />
+                      <span>Dhanushka and 4 others like</span>
+                    </div>
+                    <span className="underline">5 comments</span>
+                  </div>
+                )}
+              </div>
             </div>
-            <div className="p-4">
-              <h2 className="text-2xl font-semibold text-gray-900 mb-2">{blog.title}</h2>
-              <p className="text-gray-600 text-sm mb-4">Category: {blog.category}</p>
-              <p className="text-gray-500 text-sm mb-4">Created on: {new Date(blog.createdAt).toLocaleDateString()}</p>
-              <p className="text-gray-500 text-sm">
-                <strong>Tags:</strong> {Array.isArray(blog.tags) ? blog.tags.join(", ") : "No tags available"}
-              </p>
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
-
-      <div className="flex justify-between mt-8">
-        <button
-          className="bg-blue-500 text-white px-4 py-2 rounded-lg disabled:bg-gray-300"
-          disabled={page === 1}
-          onClick={() => setPage((prev) => prev - 1)}
-        >
-          Previous
-        </button>
-        <span className="text-lg">{page} of {totalPages}</span>
-        <button
-          className="bg-blue-500 text-white px-4 py-2 rounded-lg disabled:bg-gray-300"
-          disabled={page === totalPages}
-          onClick={() => setPage((prev) => prev + 1)}
-        >
-          Next
-        </button>
-      </div>
-    </div>
+    </main>
   );
 };
 
