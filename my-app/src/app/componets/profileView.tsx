@@ -25,7 +25,6 @@ export default function ProfileView({ session_data, blogs_data, pageState1 }) {
 	const [mobileVisible, setMobileVisible] = useState(false);
 	const [blogs, setBlogs] = useState<Blog[]>([]);
 	const [loading1, setLoading1] = useState(true);
-	
 	const [error, setError] = useState("");
 	const [page, setPage] = useState<number>(1);
 	// const mobileMenuRef = useRef(null);
@@ -48,7 +47,7 @@ export default function ProfileView({ session_data, blogs_data, pageState1 }) {
 			fetchUsers();
 		}
 	}, [pageState]);
-console.log(users,"=------>");
+	console.log(users, "=------>");
 	// useEffect(() => {
 	//   const handleClickOutside = (event) => {
 	//     if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target)) {
@@ -105,8 +104,6 @@ console.log(users,"=------>");
 		}
 		fetchMyBlogs();
 	}, [page, pageState]);
-
-	
 
 	return (
 		<div className="mt-21 md:w-[90%] w-full flex mx-auto min-h-screen gap-x-4">
@@ -285,7 +282,11 @@ console.log(users,"=------>");
 								<h2 className="text-2xl font-bold   mb-4 text-center">
 									My Blogs
 								</h2>
-								<UserBlogsPage blogs={blogs} loading={loading1} setLoading={setLoading1} />
+								<UserBlogsPage
+									blogs={blogs}
+									loading={loading1}
+									setLoading={setLoading1}
+								/>
 							</div>
 						) : pageState === "all" ? (
 							<div className=" w-full h-auto">
@@ -307,7 +308,7 @@ console.log(users,"=------>");
 												className="border p-4 rounded-lg shadow-md bg-gray-200 h-[300px] flex flex-col justify-center items-center">
 												<div className="flex items-center gap-4 flex-col">
 													<Image
-														src={user.image }
+														src={user.image}
 														alt={user.name}
 														width={90}
 														height={90}
