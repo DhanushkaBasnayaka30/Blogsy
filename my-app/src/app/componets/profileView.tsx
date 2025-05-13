@@ -93,6 +93,7 @@ export default function ProfileView({ session_data, blogs_data, pageState1 }) {
 				const data = await response.json();
 				setBlogs(data.blogs);
 			} catch (err) {
+				console.error(err);
 				setError("Failed to fetch blogs");
 			} finally {
 				setLoading1(false);

@@ -1,10 +1,12 @@
 "use client";
 import BlogEditor from "@/app/componets/BlogEdier";
 import TiptapEditor from "@/app/componets/Editor";
+import JoditEditorTemplate from "@/app/componets/JoditEditor";
+import Example from "@/app/componets/JoditEditor";
 import RichTextEditor from "@/app/componets/rich-text-editor/page";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { MdKeyboardBackspace } from "react-icons/md";
 
 export default function CreatePostPage() {
@@ -18,6 +20,7 @@ export default function CreatePostPage() {
 	const [error, setError] = useState(null);
 	const router = useRouter();
 
+	console.info(content, tags, title);
 	useEffect(() => {
 		if (session?.user.id) {
 			setUserId(session.user.id);
@@ -99,7 +102,13 @@ export default function CreatePostPage() {
 
 					<div>
 						<p className="text-lg font-medium text-gray-600 mb-2">Content</p>
-						<RichTextEditor content={content} onChange={setContent} />
+						{/* <RichTextEditor content={content} onChange={setContent} /> */}
+						<JoditEditorTemplate
+							value={content} // Controlled value
+							onChange={(newContent) => setContent(newContent)} // Sync changes with state
+							placeholder="Type something here..."
+							className="h-[500px]" // Set height through Tailwind CSS (if you're using it)
+						/>
 					</div>
 
 					<div>
